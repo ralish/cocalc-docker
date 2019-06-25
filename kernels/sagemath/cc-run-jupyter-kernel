@@ -13,5 +13,3 @@ for k, v in env.iteritems():
     env[k] = os.pathsep.join(val)
 
 os.system('exec ' + ' '.join(sys.argv[1:]))
-
-
