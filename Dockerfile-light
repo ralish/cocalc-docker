@@ -10,9 +10,8 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV TERM screen
 
-
-# So we can source (see http://goo.gl/oBPi5G)
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+# Use bash instead of (da)sh by default
+SHELL ["/bin/bash", "-c"]
 
 # Ubuntu software that are used by CoCalc (latex, pandoc, sage, jupyter)
 RUN \
