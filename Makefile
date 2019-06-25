@@ -9,8 +9,6 @@ light:
 
 run:
 	mkdir -p data/projects && docker run --name=cocalc-light -d -p 443 -p 80:80 -v `pwd`/data/projects:/projects -P cocalc
-	
+
 run-light:
 	mkdir -p data/projects-light && docker run --name=cocalc-light -d -p 443:443 -p 80:80 -v `pwd`/data/projects:/projects -P cocalc-light
-
-
