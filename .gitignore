@@ -1,0 +1,24 @@
+# Windows
+[Dd]esktop.ini
+ehthumbs.db
+Thumbs.db
+
+# Vim
+.netrwhist
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]*.un~
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+
+# Temporary
+*~
+*.bak
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Logs
+*.log
