@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Additional setup to perform after building and installing Sage
 # This is broken out into a separate script so it can be run as
 # a separate step in the Dockerfile without performing a full

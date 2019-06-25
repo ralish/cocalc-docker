@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 # !!!NOTE!!! This script is intended to be run with root privileges
 # It will run as the 'sage' user when the time is right.
 SAGE_SRC_TARGET=${1%/}
