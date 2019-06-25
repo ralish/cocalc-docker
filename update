@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-set -e
-set -v
+set -o verbose
+set -o errexit
+
 git pull
 time make build-full
 docker tag cocalc:latest sagemathinc/cocalc
