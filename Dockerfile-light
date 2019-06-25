@@ -1,6 +1,6 @@
 FROM ubuntu:18.04
 
-MAINTAINER William Stein <wstein@sagemath.com>
+LABEL maintainer="William Stein <wstein@sagemath.com>"
 
 USER root
 
