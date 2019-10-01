@@ -15,7 +15,7 @@ if [[ -z $BRANCH ]]; then
   exit 1
 fi
 
-N_CORES=$(cat /proc/cpuinfo | grep processor | wc -l)
+N_CORES=$(nproc)
 
 export SAGE_FAT_BINARY="yes"
 # Just to be sure Sage doesn't try to build its own GCC (even though
