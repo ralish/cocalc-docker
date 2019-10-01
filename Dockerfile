@@ -212,14 +212,6 @@ RUN \
 # Build a UTF-8 locale, so that tmux works -- see https://unix.stackexchange.com/questions/277909/updated-my-arch-linux-server-and-now-i-get-tmux-need-utf-8-locale-lc-ctype-bu
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen
 
-# Install IJulia kernel
-#RUN echo '\
-#ENV["JUPYTER"] = "/usr/local/bin/jupyter"; \
-#ENV["JULIA_PKGDIR"] = "/opt/julia/share/julia/site"; \
-#Pkg.init(); \
-#Pkg.add("IJulia");' | julia \
-# && mv -i "$HOME/.local/share/jupyter/kernels/julia-0.6" "/usr/local/share/jupyter/kernels/"
-
 
 ### Configuration
 
