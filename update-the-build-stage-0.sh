@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 
 set -o verbose
-
-sudo docker stop cocalc-test
-sudo docker rm cocalc-test
-
 set -o errexit
+
+sudo docker stop cocalc-test || true
+sudo docker rm cocalc-test || true
 
 git pull
 time sudo docker build --build-arg commit="$(git ls-remote -h https://github.com/sagemathinc/cocalc master | awk '{print $1}')" --build-arg BUILD_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" -t cocalc -f Dockerfile-no-agpl .
