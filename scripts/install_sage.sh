@@ -5,12 +5,12 @@
 SAGE_SRC_TARGET=${1%/}
 BRANCH=$2
 
-if [ -z $SAGE_SRC_TARGET ]; then
+if [[ -z $SAGE_SRC_TARGET ]]; then
   >&2 echo "Must specify a target directory for the sage source checkout"
   exit 1
 fi
 
-if [ -z $BRANCH ]; then
+if [[ -z $BRANCH ]]; then
   >&2 echo "Must specify a branch to build"
   exit 1
 fi
@@ -49,7 +49,7 @@ ln -sf "${SAGE_SRC_TARGET}/sage/sage" /usr/bin/sagemath
 
 # For the 'develop' image we leave everything as it would be after a
 # successful sage build
-if [ $BRANCH != "develop" ]; then
+if [[ $BRANCH != "develop" ]]; then
   make misc-clean
   make -C src/ clean
 
