@@ -49,7 +49,6 @@ RUN \
        psmisc \
        haproxy \
        nginx \
-       yapf \
        rsync \
        tidy
 
