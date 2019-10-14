@@ -117,8 +117,7 @@ RUN \
 COPY scripts/ /tmp/scripts
 RUN chmod -R +x /tmp/scripts
 
-RUN    adduser --quiet --shell /bin/bash --gecos "Sage user,101,," --disabled-password sage \
-    && chown -R sage:sage /home/sage/
+RUN    adduser --quiet --shell /bin/bash --gecos "Sage user,101,," --disabled-password sage
 
 # make source checkout target, then run the install script
 # see https://github.com/docker/docker/issues/9547 for the sync
