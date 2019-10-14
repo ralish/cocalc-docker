@@ -43,8 +43,6 @@ RUN \
        git \
        python \
        python-pip \
-       make \
-       g++ \
        sudo \
        psmisc \
        haproxy \
@@ -74,7 +72,6 @@ RUN \
    apt-get update \
 && DEBIAN_FRONTEND=noninteractive apt-get install -y \
        gfortran \
-       dpkg-dev \
        libssl-dev \
        imagemagick \
        libcairo2-dev \
