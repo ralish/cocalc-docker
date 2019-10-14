@@ -61,7 +61,6 @@ RUN \
        inetutils-ping \
        lynx \
        telnet \
-       git \
        emacs \
        subversion \
        ssh \
