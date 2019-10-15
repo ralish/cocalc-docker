@@ -6,8 +6,6 @@ FROM ubuntu:18.04
 
 LABEL maintainer="William Stein <wstein@sagemath.com>"
 
-USER root
-
 ARG BUILD_DATE
 LABEL org.label-schema.build-date=$BUILD_DATE
 

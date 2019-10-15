@@ -2,8 +2,6 @@ FROM ubuntu:18.04
 
 LABEL maintainer="William Stein <wstein@sagemath.com>"
 
-USER root
-
 # See https://github.com/sagemathinc/cocalc/issues/921
 ENV LC_ALL C.UTF-8
 ENV LANG en_US.UTF-8
