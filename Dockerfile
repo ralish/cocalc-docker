@@ -61,7 +61,6 @@ RUN \
        ssh \
        m4 \
        latexmk \
-       libpq5 \
        libpq-dev \
        build-essential \
        automake
