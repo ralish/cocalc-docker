@@ -1,0 +1,340 @@
+# Ubuntu release
+ARG UBUNTU_RELEASE="18.04"
+# Ubuntu base image
+FROM ubuntu:${UBUNTU_RELEASE}
+
+# Image metadata
+LABEL maintainer="William Stein <wstein@sagemath.com>"
+
+# Use bash instead of (da)sh
+SHELL ["/bin/bash", "-c"]
+
+# Configure APT for non-interactive use
+ENV DEBIAN_FRONTEND=noninteractive UCF_FORCE_CONFFOLD=1
+
+# Use a regional APT mirror if provided
+#
+# Must be specified as an ISO 3166-1 alpha-2 code
+ARG UBUNTU_MIRROR="au"
+RUN \
+    if [[ -n "${UBUNTU_MIRROR}" ]]; then \
+        sed -Ei "s/\/(archive\.ubuntu\.com\/)/\/${UBUNTU_MIRROR}\.\1/" /etc/apt/sources.list; \
+        sed -Ei "s/\/security\.(ubuntu\.com\/)/\/${UBUNTU_MIRROR}\.archive\.\1/" /etc/apt/sources.list; \
+    fi
+
+# Enable UTF-8 support
+#
+# Without this our locale will be POSIX (effectively ASCII) and many
+# programs will break when they encounter UTF-8 characters.
+RUN \
+    apt-get update \
+ && apt-get -y install locales locales-all \
+ && sed -Ei 's/^# (en_US\.UTF-8 UTF-8)$/\1/' /etc/locale.gen \
+ && locale-gen
+ENV LANG=en_US.UTF8 LANGUAGE=en_US:en LC_ALL=en_US.UTF8
+
+# General system software
+RUN \
+    apt-get update \
+ && apt-get install -y \
+        apt-transport-https \
+        bash-completion \
+        bup \
+        curl \
+        emacs \
+        git \
+        htop \
+        iputils-ping \
+        lynx \
+        net-tools \
+        psmisc \
+        rsync \
+        screen \
+        smem \
+        software-properties-common \
+        ssh \
+        subversion \
+        sudo \
+        telnet \
+        tmux \
+        vim \
+        wget
+
+# Development tools & libraries
+RUN \
+    apt-get update \
+ && apt-get install -y \
+        automake \
+        bison \
+        build-essential \
+        clang-format \
+        cmake \
+        flex \
+        gettext \
+        gfortran \
+        golang \
+        jupyter \
+        libbz2-dev \
+        libcairo2-dev \
+        libcurl4-openssl-dev \
+        libecm1-dev \
+        libffi-dev \
+        libflint-arb-dev \
+        libflint-dev \
+        libfreetype6-dev \
+        libgd-dev \
+        libgf2x-dev \
+        libgivaro-dev \
+        libgmp-dev \
+        libisl-dev \
+        liblrcalc-dev \
+        liblzma-dev \
+        libm4ri-dev \
+        libm4rie-dev \
+        libmpc-dev \
+        libmpfi-dev \
+        libmpfr-dev \
+        libncurses5-dev \
+        libntl-dev \
+        libpcre3-dev \
+        libpng-dev \
+        libreadline-dev \
+        librw-dev \
+        libssl-dev \
+        libsymmetrica2-dev \
+        libterm-readline-gnu-perl \
+        libxml2-dev \
+        libxslt1-dev \
+        libzmq3-dev \
+        ninja-build \
+        octave \
+        pkg-config \
+        r-cran-formatr \
+        tidy \
+        yasm \
+        zlib1g-dev
+
+# Document, graphics & scientific tools
+RUN \
+    apt-get update \
+ && apt-get install -y \
+        aspell* \
+        bc \
+        dvipng \
+        ffmpeg \
+        gmp-ecm \
+        graphviz \
+        imagemagick \
+        latexmk \
+        lcalc \
+        pandoc \
+        pari-galpol \
+        pari-gp2c \
+        poppler-utils
+
+# TeX Live: Essentials
+RUN \
+    apt-get update \
+ && apt-get install -y \
+        texlive \
+        texlive-bibtex-extra \
+        texlive-extra-utils \
+        texlive-latex-extra \
+        texlive-luatex \
+        texlive-xetex
+
+# Python
+RUN \
+    apt-get update \
+ && apt-get install -y \
+        python \
+        python-ipywidgets \
+        python-ipywidgets-doc \
+        python-jupyter* \
+        python-matplotlib* \
+        python-pip \
+        python3-ipywidgets \
+        python3-jupyter* \
+        python3-matplotlib \
+        python3-yaml \
+        yapf \
+        yapf3
+
+# Services
+RUN \
+    apt-get update \
+ && apt-get install -y \
+        haproxy \
+        libpq-dev \
+        nginx \
+        postgresql \
+        postgresql-contrib
+
+# X11
+RUN \
+    apt-get update \
+ && apt-get install -y \
+        dbus-x11 \
+        x11-apps \
+        x11-xkb-utils \
+        xclip \
+        xdotool
+
+# Xpra
+#
+# Install Xpra if set to "true"
+ARG XPRA_INSTALL="true"
+RUN \
+    if [[ "${XPRA_INSTALL}" == "true" ]]; then \
+        . /etc/lsb-release; \
+        curl -s https://xpra.org/gpg.asc | apt-key add - \
+     && echo "deb http://xpra.org/ ${DISTRIB_CODENAME} main" > /etc/apt/sources.list.d/xpra.list \
+     && apt-get update \
+     && apt-get install -y \
+            websockify \
+            xpra \
+            xvfb; \
+    fi
+
+# Node.js
+#
+# Major version of Node.js to install
+ARG NODEJS_VERSION="8"
+RUN \
+    curl -sL https://deb.nodesource.com/setup_${NODEJS_VERSION}.x | bash - \
+ && apt-get install -y nodejs \
+ && npm install -g npm
+
+# Lean
+#
+# Version of Lean to install
+ARG LEAN_VERSION="3.4.1"
+RUN \
+    cd /tmp \
+ && wget -q https://github.com/leanprover/lean/releases/download/v${LEAN_VERSION}/lean-${LEAN_VERSION}-linux.tar.gz \
+ && tar xf lean-${LEAN_VERSION}-linux.tar.gz -C /opt \
+ && rm lean-${LEAN_VERSION}-linux.tar.gz \
+ && ln -s /opt/lean-${LEAN_VERSION}-linux /opt/lean \
+ && ln -s /opt/lean/bin/lean /usr/local/bin/lean
+
+# Julia
+#
+# Version of Julia to install
+ARG JULIA_VERSION="0.6.3"
+RUN \
+    JULIA_VERSION_MAJOR_MINOR="$(echo ${JULIA_VERSION} | grep -Eo '^[0-9]+\.[0-9]+')" \
+ && cd /tmp \
+ && wget -q https://julialang-s3.julialang.org/bin/linux/x64/${JULIA_VERSION_MAJOR_MINOR}/julia-${JULIA_VERSION}-linux-x86_64.tar.gz \
+ && tar xf julia-${JULIA_VERSION}-linux-x86_64.tar.gz -C /opt \
+ && rm julia-${JULIA_VERSION}-linux-x86_64.tar.gz \
+ && ln -s /opt/julia-* /opt/julia \
+ && ln -s /opt/julia/bin/julia /usr/local/bin/julia
+
+# Jupyter kernel for Octave
+RUN pip2 install octave_kernel
+
+# JupyterLab notebook server extension
+RUN pip2 install jupyterlab
+
+# Create user for Sage installation
+ARG SAGE_USER="sage"
+RUN adduser --quiet --shell /bin/bash --gecos "Sage user,,," --disabled-password "${SAGE_USER}"
+
+# Build and install Sage
+# - https://github.com/sagemath/sage
+# - https://github.com/sagemath/docker-images
+# - https://doc.sagemath.org/html/en/installation/source.html
+#
+# URL of Sage repository (must be named "sage")
+ARG SAGE_SRC_REPO="https://github.com/sagemath/sage.git"
+# Sage branch to checkout
+ARG SAGE_SRC_BRANCH="master"
+# TODO: Sage commit to checkout
+#ARG SAGE_SRC_COMMIT="HEAD"
+# Target path for Sage
+ARG SAGE_SRC_TARGET="/usr/local"
+# Compile for compatibility with the widest range of CPUs. Effectively
+# this means avoiding taking advantage of modern CPU instructions which
+# may noy be available when running on older processors. The trade-off
+# is that you're sacrificing performance for compatibility.
+#ENV SAGE_FAT_BINARY="yes"
+
+COPY scripts /tmp/scripts
+RUN /tmp/scripts/install_sage.sh --install -u "${SAGE_USER}" -r "${SAGE_SRC_REPO}" -b "${SAGE_SRC_BRANCH}" -t "${SAGE_SRC_TARGET}" --no-colour && sync
+RUN /tmp/scripts/install_sage.sh --post-install -u "${SAGE_USER}" --no-colour && sync
+
+# Build and install CoCalc
+# - https://github.com/sagemathinc/cocalc
+# - https://github.com/sagemathinc/cocalc-docker
+#
+# URL of CoCalc repository (must be named "cocalc")
+ARG COCALC_SRC_REPO="https://github.com/sagemathinc/cocalc.git"
+# CoCalc branch to checkout
+ARG COCALC_SRC_BRANCH="master"
+# CoCalc commit to checkout
+ARG COCALC_SRC_COMMIT="HEAD"
+# TODO: Target path for CoCalc
+#ARG COCALC_SRC_TARGET="/"
+
+# Clone the repository
+RUN \
+    git clone --depth 1 --branch "${COCALC_SRC_BRANCH}" "${COCALC_SRC_REPO}" \
+ && cd /cocalc \
+ && git checkout "${COCALC_SRC_COMMIT}"
+
+# Build CoCalc
+#
+# Note that compute *must* be built after web as it precompiles all the
+# JavaScript files to improve performance, but doing so breaks the web
+# build due to the .js files somehow messing-up cjsx loading.
+RUN \
+    cd /cocalc/src \
+ && . ./smc-env \
+ && ./install.py all --web \
+ && ./install.py all --compute \
+ && rm -rf /root/.npm /root/.node_gyp
+
+# Integrate with Sage
+RUN \
+    cd /cocalc/src \
+ && sage -pip install --upgrade smc_sagews
+
+# Rename Sage's Python 3 executable so the system version is used. This
+# is necessary for the usage of Python 3 from sagews.
+RUN \
+    cd "${SAGE_SRC_TARGET}"/sage/local/bin \
+ && mv python3 python3-bkb
+
+# Install Jupyter widgets
+RUN \
+    pip2 install --no-cache-dir ipyleaflet \
+ && pip3 install --no-cache-dir ipyleaflet
+
+# Install Jupyter Kernel definitions
+COPY kernels /usr/local/share/jupyter/kernels
+
+# Configure Sage R Kernel so it actually works
+COPY kernels/ir/Rprofile.site "${SAGE_SRC_TARGET}"/sage/local/lib/R/etc/Rprofile.site
+
+# System configuration
+COPY configs/login /etc/default/login
+COPY configs/nginx.conf /etc/nginx/sites-available/default
+COPY configs/haproxy.cfg /etc/haproxy/haproxy.cfg
+COPY configs/bashrc /root/.bashrc
+COPY launcher/run.py /root/run.py
+
+# TeX Live: Complete
+#
+# Optionally install the full TeX Live distribution. Performed at the
+# end of the build as it's purely additive, allowing for enabling it
+# without having to perform all the expensive subsequent build steps.
+ARG TEXLIVE_FULL="false"
+RUN \
+    if [[ "${TEXLIVE_FULL}" == "true" ]]; then \
+        apt-get update \
+     && apt-get install -y texlive-full; \
+    fi
+
+# Get calculating ...
+CMD /root/run.py
+EXPOSE 80 443
